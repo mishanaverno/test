@@ -1,6 +1,6 @@
 <?php
 
-use app\models\User;
+use app\models\ServiceUser;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -17,7 +17,7 @@ echo $form->field($model, 'type')->dropdownList(
     ],
     ['prompt'=>'Select type']
 );
-$users = User::find()->all();
+$users = ServiceUser::find()->all();
 $items = ArrayHelper::map($users,'id','fullName');
 
 echo $form->field($model, 'user')->dropdownList($items,

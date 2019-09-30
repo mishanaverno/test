@@ -2,26 +2,21 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\Service;
 use app\models\ServiceSearch;
-use app\models\User;
-use yii\data\ActiveDataProvider;
+use app\models\ServiceUser;
 
 class SiteController extends Controller
 {
-
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
+    public function beforeAction($action) {
+        if(Yii::$app->user->isGuest && $action->id != 'login')
+            $this->redirect(['site/login']);
+        return true;
+    }
+    
     public function actionIndex()
     {   
         $searchModel = new ServiceSearch();
@@ -47,10 +42,40 @@ class SiteController extends Controller
         return $this->renderAjax('update', ['model'=>$model]);
     }
     public function actionCreateUser(){
-        return $this->render('create-user');
+        $model = new ServiceUser();
+        if(Yii::$app->request->post('User')){
+            $model->load(Yii::$app->request->post(),'User');
+            $model->save();
+            return $this->goHome();
+        }
+        return $this->render('create-user', ['model'=>$model]);
     }
     public function actionCreateService(){
         $model = new Service();
+        if(Yii::$app->request->post('Service')){
+            $model->load(Yii::$app->request->post(),'Service');
+            $model->save();
+            return $this->goHome();
+        }
         return $this->render('create-service', ['model'=>$model]);
+    }
+    public function actionLogin(){
+        if (!\Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+        $model = new User();
+        if(Yii::$app->request->post('User')){
+            $userdata = Yii::$app->request->post('User');
+            $identity = User::findOne(['login' => $userdata['login'], 'password'=> $userdata['password']]);
+            Yii::$app->user->login($identity);
+            $this->goHome();
+            
+        }
+        return $this->render('login',['model' => $model]);
+    }
+    public function actionLogout()
+    {
+        Yii::$app->user->logout();
+        $this->redirect(['site/login']);
     }
 }

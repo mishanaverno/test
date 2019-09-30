@@ -3,12 +3,13 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 
-class Service extends ActiveRecord{
+class Service extends ActiveRecord
+{
     const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 1;
 
     public function getUserName(){
-        return $this->hasOne(User::className(),['id' => 'user']);
+        return $this->hasOne(ServiceUser::className(),['id' => 'user']);
     }
     public function rules()
     {

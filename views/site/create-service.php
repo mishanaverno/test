@@ -1,6 +1,7 @@
 <?php
 
-use app\models\User;
+use app\models\Service;
+use app\models\ServiceUser;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -19,7 +20,7 @@ echo $form->field($model, 'type')->dropdownList(
     ],
     ['prompt'=>'Select type']
 );
-$users = User::find()->all();
+$users = ServiceUser::find()->all();
 $items = ArrayHelper::map($users,'id','fullName');
 
 echo $form->field($model, 'user')->dropdownList($items,
@@ -29,11 +30,8 @@ echo $form->field($model, 'ip')->input('text');
 echo $form->field($model, 'domain')->input('text');
 ?>
 <div class="form-group">
-        <?= Html::submitButton('Update', [
+        <?= Html::submitButton('Create', [
                 'class' => 'btn btn-info',
-                'data-pjax' => '1',
-                'onClick' => "$('#modal').modal('hide')",
-                
             ]); ?>
 </div>
 <?php ActiveForm::end();

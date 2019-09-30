@@ -1,21 +1,52 @@
-<?php
+<?php 
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
-class User extends ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_INACTIVE = 0;
-    const STATUS_ACTIVE = 1;
-    public function rules()
-    {
-        return [['first_name','last_name'], 'required'];
-    }
     public static function tableName()
     {
-        return 'users';
+        return 'admins';
     }
-    public function getFullName(){
-        return $this->first_name.' '.$this->last_name;
+    
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne(['access_token' => $token]);
+    }
+
+    
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+    
+    public function validateAuthKey($authKey)
+    {
+        return $this->getAuthKey() === $authKey;
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                $this->auth_key = Yii::$app->security->generateRandomString();
+            }
+            return true;
+        }
+        return false;
     }
 }
